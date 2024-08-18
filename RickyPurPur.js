@@ -16,9 +16,9 @@ const axios = require("axios");
 const toUrl = require("./func/tools-toUrl.js");
 const gameku = require('./func/fun-game.js');
 //---
-const botOwner = '6283894391287';
-const noBot = '6283873321433'
-const botGroup = 'https://chat.whatsapp.com/D6bHVUjyGj06bb6iZeUsOI';
+const botOwner = '6282257529886';
+const noBot = '62857843536461'
+const botGroup = 'https://chat.whatsapp.com/DXPU5F2cePXEaysvcImdUy';
 //---
 const arrMenuDownloader = ['instagram - pengunduh foto/video ig', 'ig - cmd singkat Instagram', 'tiktok - pengunduh video/foto tiktok', 'tt - cmd singkat tiktok', 'play - cari dan play video/audio YouTube', 'ytmp3 - pengunduh YouTube audio', 'ytmp4 - pengunduh YouTube video'];
 const arrMenuAI = ['ai - Akses AI tercanggih dengan pengetahuan waktu nyata', 'anidif - pembuat gambar anime/diffusion'];
@@ -184,16 +184,8 @@ module.exports = sansekai = async (client, m, chatUpdate) => {
             if (m.quoted.text.includes("> mau *.nyerah* apa *.hint*") && !isCmd2) {
                 const topSkor = await gameku.jawabSoal(nomorUser, m.body);
                 const userMentions = tagUser(topSkor);
-                const response = await axios.get('https://nue-api.vercel.app/api/lgpt', {
-                                params: {
-                                    user: m.chat, 
-                                    text: "aku sudah menjawab",
-                                    systemPrompt: 'anda adalah alicia AI',
-                                    aiMessage: `Pengguna menjawab soal dalam game "${m.quoted.text}", dan jawabannya adalah "${m.body}". Beri tau pengguna bahwa jawabannya adalah "${topSkor}".`
-                                }
-                });
                 return client.sendMessage(m.chat, {
-                    text: response.data.result,
+                    text: topSkor,
                     mentions: userMentions
                 }, {
                     quoted: m
@@ -242,41 +234,52 @@ module.exports = sansekai = async (client, m, chatUpdate) => {
             }
         }
         //Auto Ai
-        const allMenus = [...arrMenuDownloader, ...arrMenuAI, ...arrMenuAnime, ...arrMenuTools, ...arrMenuFun, ...arrMenuMaker, ...arrMenuOther];
+        // Definisikan ID bot
+const noBot = '62857843536461@s.whatsapp.net'; // Ganti dengan ID bot Anda
+
+// Auto Ai
+const allMenus = [...arrMenuDownloader, ...arrMenuAI, ...arrMenuAnime, ...arrMenuTools, ...arrMenuFun, ...arrMenuMaker, ...arrMenuOther];
 const sortedMenus = allMenus.sort();
 const formattedMenus = sortedMenus.map(menu => `/${menu}`);
-        const prompt = `Anda adalah Alicia AI, AI model terbaru yang paling canggih, Anda mempunyai sikap seperti remaja perempuan. Anda mempunyai fitur unggulan seperti:\n${formattedMenus}\nAnda tidak boleh membuat fitur sendiri, Anda hanya boleh memberikan fitur pada list yang tertera saja. Anda berinteraksi layaknya anak remaja.${m.quoted ? `\n\nPengguna membalas pesan Anda yang ini: "${m.quoted.text || ''}"` : ''}. Note : Anda hanya program berbasis text dan tidak dapat menjalankan cmd nya, anda hanya dapat menyuruh pengguna untuk melakukanya secara manual.`;
+const prompt = `Anda adalah Rimuru AI, AI model terbaru yang paling canggih, Anda mempunyai sikap seperti raja iblis. Anda mempunyai fitur unggulan seperti:\n${formattedMenus}\nAnda tidak boleh membuat fitur sendiri, Anda hanya boleh memberikan fitur pada list yang tertera saja. Anda berinteraksi layaknya raja iblis.${m.quoted ? `\n\nPengguna membalas pesan Anda yang ini: "${m.quoted.text || ''}"` : ''}. Note : Anda hanya program berbasis text dan tidak dapat menjalankan cmd nya, anda hanya dapat menyuruh pengguna untuk melakukannya secara manual.`;
+
 const autoAI = async () => {
-            try {
-
-                const response = await axios.get('https://nue-api.vercel.app/api/lgpt', {
-                                params: {
-                                    user: m.chat, 
-                                    text: m.body,
-                                    systemPrompt: prompt
-                                }
-                });
-                const hasil = response.data.result;
-                m.reply(hasil);
-            } catch (error) {
-                console.error('Error:', error.message);
-                m.reply('Terjadi kesalahan saat mengakses API');
+    try {
+        const response = await axios.get('https://nue-api.vercel.app/api/lgpt', {
+            params: {
+                user: m.chat, 
+                text: m.body,
+                systemPrompt: prompt
             }
-        };
+        });
+        const hasil = response.data.result;
+        m.reply(hasil);
+    } catch (error) {
+        console.error('Error:', error.message);
+        m.reply('Terjadi kesalahan saat mengakses API');
+    }
+};
 
-        // Function to handle messages
-        if (!m.isGroup && !cekCmd(m.body) && m.body) {
-            if (m.quoted) {
-                if (!m.quoted.text.includes('alicia-metadata:')) {
-                    return autoAI();
-                }
-            } else {
-                return autoAI();
-            }
-        }
-        if (m.quoted && m.quoted.sender.includes(noBot) && !cekCmd(m.body)) {
+// Function to handle messages
+if (!m.isGroup && !cekCmd(m.body) && m.body) {
+    // Cek jika pengirim adalah bot itu sendiri
+    if (m.sender === noBot) {
+        return; // Jangan balas jika pengirim adalah bot
+    }
+
+    if (m.quoted) {
+        if (!m.quoted.text.includes('alicia-metadata:')) {
             return autoAI();
         }
+    } else {
+        return autoAI();
+    }
+}
+
+if (m.quoted && m.quoted.sender.includes(noBot) && !cekCmd(m.body)) {
+    return; // Jangan balas jika pesan yang dikutip berasal dari bot
+}
+
 
         if (cekCmd(m.body)) {
             switch (command) {
@@ -321,8 +324,8 @@ const autoAI = async () => {
                                 m.reply("Terjadi kesalahan " + error.message)
                             }
                         }break;
-
-
+                        
+                    
                 case 'ai': {
                     if (!msg) return m.reply('*masukan query*');
                     loading();
@@ -375,7 +378,7 @@ const autoAI = async () => {
                                 break;
                             }
                                 case 'owner': {
-                                    m.reply(`*Kontak Owner*\n*WA :* wa.me/6283894391287\n*Email :* rikipurpur98@gmail.com\n> mau request fitur atau bertanya tentang bot chat aja yo`);
+                                    m.reply(`*Kontak Owner*\n*WA :* wa.me/6282257529886\n*Email :* rimurubetaa@gmail.com\n> mau request fitur atau bertanya tentang bot chat aja yo`);
                                 }break;
                                 case 'ig':
                                     case 'instagram': {
@@ -648,7 +651,7 @@ const autoAI = async () => {
                                                                                     }
 
                                                                                     const downloadUrl = command === 'ytmp3' ? data.download.audio: data.download.video;
-                                                                                    m.reply(`\`Card Info:\`\n*Title:* ${data.info.title}\n*Author:* ${data.info.channel.name}`);
+                                                                                    m.reply(`\`Card Info:\`\n*Title:* ${data.info.title}\n*Author:* ${data.info.author.name}`);
 
                                                                                     const messageOptions = command === 'ytmp4'
                                                                                     ? {
@@ -725,3 +728,4 @@ const autoAI = async () => {
                                                             delete require.cache[file];
                                                             require(file);
                                                     });
+
